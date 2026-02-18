@@ -162,7 +162,7 @@ export function injectPositive(values: number[]): number[] {
     //console.log(sum);
     newArray = [...values];
     newArray.splice(myIndex, 0, sum);
-    console.log(newArray);
+    //console.log(newArray);
     //console.log([100, 199, 1, -5, 300, 7, 3]);
 
     return newArray;
