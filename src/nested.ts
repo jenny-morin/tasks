@@ -1,5 +1,6 @@
 import { Answer } from "./interfaces/answer";
 import { Question, QuestionType } from "./interfaces/question";
+import { makeBlankQuestion } from "./objects";
 
 /**
  * Consumes an array of questions and returns a new array with only the questions
@@ -67,8 +68,8 @@ export function removeQuestion(questions: Question[], id: number): Question[] {
  * Do not modify the input array.
  */
 export function getNames(questions: Question[]): string[] {
-    let choosenQ: Question[] = questions;
-    choosenQ = choosenQ.filter((x: Question): boolean => x.id != id);
+    let choosenQ: string[] = [];
+    choosenQ = questions.map((x) => x.name);
     return choosenQ;
 }
 
@@ -78,7 +79,16 @@ export function getNames(questions: Question[]): string[] {
  * making the `text` an empty string, and using false for both `submitted` and `correct`.
  */
 export function makeAnswers(questions: Question[]): Answer[] {
-    return [];
+    let myAnswers: Answer[] = [];
+    myAnswers = questions.map(
+        (x): Answer => ({
+            questionId: x.id,
+            text: "",
+            submitted: false,
+            correct: false,
+        }),
+    );
+    return myAnswers;
 }
 
 /***
@@ -87,7 +97,10 @@ export function makeAnswers(questions: Question[]): Answer[] {
  * Hint: as usual, do not modify the input questions array
  */
 export function publishAll(questions: Question[]): Question[] {
-    return [];
+    let published: Question[] = questions;
+    published = published.map((x) => ({ ...x, published: true }));
+
+    return published;
 }
 
 /***
@@ -102,7 +115,10 @@ export function addNewQuestion(
     name: string,
     type: QuestionType,
 ): Question[] {
-    return [];
+    let newQ: Question[] = [...questions, makeBlankQuestion(id, name, type)];
+    //console.log(questions);
+    //console.log(newQ);
+    return newQ;
 }
 
 /***
@@ -117,7 +133,13 @@ export function renameQuestionById(
     targetId: number,
     newName: string,
 ): Question[] {
-    return [];
+    let newQue: Question[] = questions;
+    newQue = newQue.map(
+        (x: Question): Question =>
+            x.id == targetId ? { ...x, name: newName } : x,
+    );
+    return newQue;
+    //return [];
 }
 
 /**
@@ -138,5 +160,36 @@ export function editOption(
     targetOptionIndex: number,
     newOption: string,
 ): Question[] {
-    return [];
+    let newArray: Question[] = [...questions];
+    let myIndex: number = newArray.findIndex(
+        (x: Question): boolean => x.id == targetId,
+    );
+    let myItem: Question = newArray[myIndex];
+    let newOptions: string[] = [];
+    if (targetOptionIndex === -1) {
+        newOptions = [...myItem.options, newOption];
+        //wmyItem.options.push(newOption);
+        //newOptions = myItem.options;
+    } else {
+        //let newOptions:String[]=[]
+        newOptions = [
+            ...myItem.options.slice(0, targetOptionIndex),
+            newOption,
+            ...myItem.options.slice(targetOptionIndex + 1),
+        ];
+    }
+    newArray = newArray.map(
+        (x: Question): Question =>
+            x.id == targetId ? { ...x, options: newOptions } : x,
+    );
+    /**console.log(questions);
+    console.log(newOption);
+    console.log(targetId);
+    console.log(targetOptionIndex);
+    console.log(newOptions);
+    console.log(myItem);
+    console.log(newArray);
+    return newArray;
+    */
+    return newArray;
 }

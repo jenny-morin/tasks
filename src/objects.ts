@@ -8,9 +8,18 @@ import { Question, QuestionType } from "./interfaces/question";
 export function makeBlankQuestion(
     id: number,
     name: string,
-    type: QuestionType
+    type: QuestionType,
 ): Question {
-    return {};
+    return {
+        id,
+        name,
+        type,
+        body: "",
+        expected: "",
+        options: [],
+        points: 1,
+        published: false,
+    };
 }
 
 /**
@@ -21,7 +30,18 @@ export function makeBlankQuestion(
  * HINT: Look up the `trim` and `toLowerCase` functions.
  */
 export function isCorrect(question: Question, answer: string): boolean {
-    return false;
+    let ignoreAnswer = answer.toLowerCase();
+    ignoreAnswer = ignoreAnswer.trim();
+    //console.log(answer, question.expected);
+    //console.log(answer == question.expected);
+    let rightAns = question.expected.toLowerCase();
+    rightAns = rightAns.trim();
+    //console.log(answer == rightAns);
+    if (ignoreAnswer == rightAns) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 /**
@@ -31,7 +51,17 @@ export function isCorrect(question: Question, answer: string): boolean {
  * be exactly one of the options.
  */
 export function isValid(question: Question, answer: string): boolean {
-    return false;
+    if (question.type == "short_answer_question") {
+        return true;
+    } else {
+        let myAns = question.options;
+        let ogLen = myAns.length;
+        myAns = myAns.filter((x: string): boolean => x != answer);
+        if (ogLen != myAns.length) {
+            return true;
+        }
+        return false;
+    }
 }
 
 /**
@@ -41,7 +71,12 @@ export function isValid(question: Question, answer: string): boolean {
  * name "My First Question" would become "9: My First Q".
  */
 export function toShortForm(question: Question): string {
-    return "";
+    let retID = question.id;
+    let retName = question.name;
+    retName = retName.slice(0, 10);
+    let statement = retID + ": " + retName;
+    //console.log(statement, retName);
+    return statement;
 }
 
 /**
@@ -62,7 +97,13 @@ export function toShortForm(question: Question): string {
  * Check the unit tests for more examples of what this looks like!
  */
 export function toMarkdown(question: Question): string {
-    return "";
+    let finalProd = "# " + question.name + "\n" + question.body;
+    if (question.type != "short_answer_question") {
+        for (let i = 0; i < question.options.length; i++) {
+            finalProd = finalProd + "\n- " + question.options[i];
+        }
+    }
+    return finalProd;
 }
 
 /**
@@ -70,7 +111,8 @@ export function toMarkdown(question: Question): string {
  * `newName`.
  */
 export function renameQuestion(question: Question, newName: string): Question {
-    return question;
+    let myquestion = { ...question, name: newName };
+    return myquestion;
 }
 
 /**
@@ -79,7 +121,8 @@ export function renameQuestion(question: Question, newName: string): Question {
  * published; if it was published, now it should be not published.
  */
 export function publishQuestion(question: Question): Question {
-    return question;
+    let myquestion = { ...question, published: !question.published };
+    return myquestion;
 }
 
 /**
@@ -89,7 +132,13 @@ export function publishQuestion(question: Question): Question {
  * The `published` field should be reset to false.
  */
 export function duplicateQuestion(id: number, oldQuestion: Question): Question {
-    return oldQuestion;
+    let myquestion = {
+        ...oldQuestion,
+        name: "Copy of " + oldQuestion.name,
+        published: false,
+        id: id,
+    };
+    return myquestion;
 }
 
 /**
@@ -100,7 +149,12 @@ export function duplicateQuestion(id: number, oldQuestion: Question): Question {
  * Check out the subsection about "Nested Fields" for more information.
  */
 export function addOption(question: Question, newOption: string): Question {
-    return question;
+    //console.log(question.options);
+    let myList = [...question.options, newOption];
+    //myList = myList.splice(myList.length, 0, newOption);
+    let myquestion = { ...question, options: myList };
+    //console.log(myList);
+    return myquestion;
 }
 
 /**
@@ -115,7 +169,14 @@ export function mergeQuestion(
     id: number,
     name: string,
     contentQuestion: Question,
-    { points }: { points: number }
+    { points }: { points: number },
 ): Question {
-    return contentQuestion;
+    let myQuestion = {
+        ...contentQuestion,
+        points: points,
+        published: false,
+        id: id,
+        name: name,
+    };
+    return myQuestion;
 }
